@@ -1,5 +1,4 @@
-import React from 'react';
-
+//styles
 import './Avatar.css';
 
 const Avatar = props =>
