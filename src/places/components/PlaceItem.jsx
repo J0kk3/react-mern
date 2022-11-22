@@ -1,6 +1,9 @@
 //hooks
 import { useState, useContext } from 'react';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 //components
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { AuthContext } from '../../shared/context/auth-context';
 import Map from '../../shared/components/UIElements/Map';
 import Modal from '../../shared/components/UIElements/Modal';
@@ -11,6 +14,7 @@ import "./PlaceItem.css";
 
 const PlaceItem = props =>
 {
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const auth = useContext( AuthContext );
 
     const [ showMap, setShowMap ] = useState( false );
@@ -24,14 +28,22 @@ const PlaceItem = props =>
 
     const cancelDeleteHandler = () => setShowConfirmModal( false );
 
-    const confirmDeleteHandler = () =>
+    const confirmDeleteHandler = async () =>
     {
         setShowConfirmModal( false );
-        console.log( "DELETING..." );
+        try
+        {
+            await sendRequest( `http://localhost:5000/api/places/${ props.id }`,
+                "DELETE"
+            );
+            props.onDelete( props.id );
+        }
+        catch ( err ) { }
     };
 
     return (
         <>
+            <ErrorModal error={ error } onClear={ clearError } />
             <Modal
                 show={ showMap }
                 onCancel={ closeMapHandler }
@@ -55,6 +67,7 @@ const PlaceItem = props =>
             </Modal>
             <li className="place-item">
                 <Card className="place-item__content">
+                    { isLoading && <LoadingSpinner asOverlay /> }
                     <div className="place-item__image">
                         <img src={ props.image } alt={ props.title } />
                     </div>
@@ -65,7 +78,7 @@ const PlaceItem = props =>
                     </div>
                     <div className="place-item__actions">
                         <Button inverse onClick={ openMapHandler }>VIEW ON MAP</Button>
-                        { auth.isLoggedIn && <Button to={ `/places/${ props.id }` }>EDIT</Button> }
+                        { auth.isLoggedIn && <Button to={ `/ places / ${ props.id }` }>EDIT</Button> }
                         { auth.isLoggedIn && <Button danger onClick={ showDeleteWarningHandler }>DELETE</Button> }
                     </div>
                 </Card>
@@ -74,4 +87,4 @@ const PlaceItem = props =>
     );
 };
 
-export default PlaceItem;
+export default PlaceItem;;
