@@ -6,7 +6,7 @@ import
   Redirect,
 } from 'react-router-dom';
 //hooks
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 //pages
 import Auth from './user/pages/Auth';
 import Users from './user/pages/Users';
@@ -25,6 +25,7 @@ const App = () =>
   const login = useCallback( ( uid, token ) =>
   {
     setToken( token );
+    localStorage.setItem( 'userData', JSON.stringify( { userId: uid, token: token } ) );
     setUserId( uid );
   }, [] );
 
@@ -32,7 +33,17 @@ const App = () =>
   {
     setToken( null );
     setUserId( null );
+    localStorage.removeItem( 'userData' );
   }, [] );
+
+  useEffect( () =>
+  {
+    const storedData = JSON.parse( localStorage.getItem( 'userData' ) );
+    if ( storedData && storedData.token )
+    {
+      login( storedData.userId, storedData.token );
+    }
+  }, [ login ] );
 
   let routes;
 

@@ -61,6 +61,7 @@ const UpdatePlace = () =>
             }
             catch ( err ) { }
         };
+        fetchPlace();
     }, [ sendRequest, placeId, setFormData ] );
 
     const placeUpdateSubmitHandler = async event =>
