@@ -20,11 +20,11 @@ const UserPlaces = () =>
         {
             try
             {
-                const responseData = await sendRequest( `http://localhost:5000/api/places/user/${ userId }` );
+                const responseData = await sendRequest( `${ process.env.REACT_APP_BACKEND_URL }/places/user/${ userId }` );
                 setLoadedPlaces( responseData.places );
-            }
-            catch ( err ) { }
+            } catch ( err ) { }
         };
+        fetchPlaces();
     }, [ sendRequest, userId ] );
 
     const placeDeletedHandler = deletedPlaceId =>
